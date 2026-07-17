@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { apiFetch } from '../../lib/api';
 
 type User = { first_name: string; last_name: string; email: string };
@@ -78,7 +79,7 @@ export default function DashboardPage() {
   return <div className="erp-shell">
     <aside className="sidebar">
       <div className="logo-mark"><span>CA</span><strong>ContaAI</strong></div>
-      <nav>{modules.map(([icon, label], index) => <button key={label} className={index === 0 ? 'nav-item active' : 'nav-item'}><span>{icon}</span>{label}</button>)}</nav>
+      <nav>{modules.map(([icon, label], index) => <button key={label} className={index === 0 ? 'nav-item active' : 'nav-item'}><span>{icon}</span>{label}</button>)}<Link href="/updates" className="nav-item-link"><span>◴</span>Actualizări</Link></nav>
       <div className="sidebar-bottom"><div className="ai-status"><span className="pulse"/><div><strong>AI Engine</strong><small>Pregătit pentru documente</small></div></div></div>
     </aside>
 
