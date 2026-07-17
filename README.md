@@ -1,38 +1,36 @@
 # ContaAI
 
-Fundația tehnică pentru un ERP contabil asistat de AI. AI-ul generează propuneri, dar nu postează automat note contabile.
+ERP contabil asistat de AI. AI-ul generează propuneri; postarea contabilă necesită aprobarea explicită a unui utilizator autorizat.
 
-## Pornire rapidă
+## Sprint 1 — Identity & Authentication
 
-```bash
-cp .env.example .env
-nano .env   # schimbă parolele și JWT_SECRET
-make up
-make logs
-```
+- parole Argon2
+- access token JWT, 15 minute
+- refresh token JWT, 30 zile, rotație și revocare în PostgreSQL
+- cookie-uri HttpOnly
+- register, login, refresh, logout și profil curent
+- pagini Next.js pentru autentificare, înregistrare și dashboard
 
-Servicii:
+## Actualizare din foundation-v1
 
-- Web: http://SERVER_IP:3000
-- API: http://SERVER_IP:8000
-- API docs: http://SERVER_IP:8000/docs
-- MinIO console: http://SERVER_IP:9001
-
-## Verificare
+Păstrează fișierul `.env` existent și adaugă variabilele lipsă din `.env.example`, apoi:
 
 ```bash
-docker compose ps
-curl http://localhost:8000/health
+docker compose up --build -d
+docker compose logs --tail=100 api web
 ```
 
-## Oprire
+Endpoint-uri:
 
-```bash
-make down
-```
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh`
+- `POST /auth/logout`
+- `GET /auth/me`
+- `GET /health`
 
-## Reset complet al datelor de dezvoltare
+UI:
 
-```bash
-make clean
-```
+- `http://SERVER_IP:3000/login`
+- `http://SERVER_IP:3000/register`
+- `http://SERVER_IP:3000/dashboard`
