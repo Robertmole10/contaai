@@ -34,3 +34,27 @@ UI:
 - `http://SERVER_IP:3000/login`
 - `http://SERVER_IP:3000/register`
 - `http://SERVER_IP:3000/dashboard`
+
+## Sprint 2 — Multi-tenancy
+
+Sprint 2 adds organizations, multiple companies, memberships, seeded roles and permissions, workspace APIs, onboarding, company switching and the ERP dashboard shell.
+
+After applying the Sprint 2 files:
+
+```bash
+cd ~/Projects/contaai
+docker compose down
+docker compose up --build -d
+
+docker compose exec api alembic current
+docker compose exec api alembic heads
+curl http://localhost:8000/health
+```
+
+Expected Alembic head:
+
+```text
+0003_multi_tenancy
+```
+
+Open the web app, sign in, and create the first organization and company through the onboarding dialog.
