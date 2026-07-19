@@ -99,9 +99,23 @@ class Company(Base):
         cascade="all, delete-orphan",
     )
 
+    invoices: Mapped[list["Invoice"]] = relationship(
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
+
+    documents: Mapped[list["Document"]] = relationship(
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
+
 from app.modules.accounting.models import (  # noqa: E402
     Account,
     AccountingPeriod,
     JournalEntry,
 )
-from app.modules.invoicing.models import BusinessPartner  # noqa: E402
+from app.modules.invoicing.models import (  # noqa: E402
+    BusinessPartner,
+    Invoice,
+)
+from app.modules.documents.models import Document  # noqa: E402

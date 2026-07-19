@@ -5,7 +5,12 @@ from sqlalchemy import engine_from_config, pool
 
 from app.core.config import settings
 from app.db.base import Base
+# Import every SQLAlchemy model before assigning Base.metadata.
+# Alembic autogenerate only sees tables whose model modules were imported.
 from app.models import company, organization, refresh_token, user  # noqa: F401
+from app.modules.accounting import models as accounting_models  # noqa: F401
+from app.modules.documents import models as document_models  # noqa: F401
+from app.modules.invoicing import models as invoicing_models  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)

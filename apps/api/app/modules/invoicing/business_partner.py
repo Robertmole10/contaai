@@ -157,9 +157,14 @@ class BusinessPartner(Base):
         onupdate=func.now(),
     )
 
+    invoices: Mapped[list["Invoice"]] = relationship(
+        back_populates="business_partner",
+    )
+
     company: Mapped["Company"] = relationship(
         back_populates="business_partners",
     )
 
 
 from app.models.company import Company  # noqa: E402
+from app.modules.invoicing.invoice import Invoice  # noqa: E402

@@ -29,6 +29,9 @@ class User(Base):
     memberships: Mapped[list["Membership"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
-
+    uploaded_documents: Mapped[list["Document"]] = relationship(
+        back_populates="uploaded_by",
+    )
 
 from app.models.refresh_token import RefreshToken  # noqa: E402
+from app.modules.documents.models import Document  # noqa: E402
