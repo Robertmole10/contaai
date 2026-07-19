@@ -80,10 +80,6 @@ class Company(Base):
         back_populates="companies"
     )
 
-    documents: Mapped[list["Document"]] = relationship(
-        back_populates="company",
-        cascade="all, delete-orphan",
-    )
     
     accounts: Mapped[list["Account"]] = relationship(
         back_populates="company",
@@ -109,4 +105,3 @@ from app.modules.accounting.models import (  # noqa: E402
     JournalEntry,
 )
 from app.modules.invoicing.models import BusinessPartner  # noqa: E402
-from app.modules.documents.models import Document  # noqa: E402
