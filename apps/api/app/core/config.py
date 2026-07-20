@@ -1,5 +1,7 @@
+from typing import Annotated
+
 from pydantic import field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -16,7 +18,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
     cookie_secure: bool = False
-    cors_origins: list[str] = ["http://localhost:3000"]
+    cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:3000"]
 
     model_config = SettingsConfigDict(case_sensitive=False)
 
@@ -29,3 +31,13 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+from pathlib import Path
+
+VERSION_FILE = Path("/app/VERSION")
+
+def get_app_version() -> str:
+    try:
+        return VERSION_FILE.read_text().strip()
+    except Exception:
+        return "dev"

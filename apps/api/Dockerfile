@@ -7,3 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN chmod +x /app/scripts/start.sh
 EXPOSE 8000
+COPY VERSION /app/VERSION

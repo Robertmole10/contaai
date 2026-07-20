@@ -13,8 +13,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - backend_net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -28,8 +26,6 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-    networks:
-      - backend_net
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -46,8 +42,6 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - minio_data:/data
-    networks:
-      - storage_net
     ports:
       - "100.119.138.125:9000:9000"
       - "100.119.138.125:9001:9001"
@@ -75,7 +69,7 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
       REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS}
       COOKIE_SECURE: ${COOKIE_SECURE}
-      CORS_ORIGINS: '${CORS_ORIGINS}'
+      CORS_ORIGINS: ${CORS_ORIGINS}
     depends_on:
       postgres:
         condition: service_healthy
@@ -83,10 +77,6 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-    networks:
-      - frontend_net
-      - backend_net
-      - storage_net
     ports:
       - "127.0.0.1:8000:8000"
     command: ["/app/scripts/start.sh"]
@@ -106,8 +96,6 @@ services:
     depends_on:
       api:
         condition: service_healthy
-    networks:
-      - frontend_net
     ports:
       - "127.0.0.1:3000:3000"
     logging: *default-logging
@@ -124,8 +112,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    networks:
-      - backend_net
     command: ["python", "-m", "app.worker"]
     logging: *default-logging
     restart: unless-stopped
@@ -134,11 +120,3 @@ volumes:
   postgres_data:
   redis_data:
   minio_data:
-
-networks:
-  frontend_net:
-    driver: bridge
-  backend_net:
-    driver: bridge
-  storage_net:
-    driver: bridge
