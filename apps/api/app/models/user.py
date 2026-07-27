@@ -45,6 +45,11 @@ class User(Base):
     memberships: Mapped[list["Membership"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    platform_role_assignments: Mapped[list["UserPlatformRole"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+        foreign_keys="UserPlatformRole.user_id",
+    )
     uploaded_documents: Mapped[list["Document"]] = relationship(
         back_populates="uploaded_by",
     )
@@ -52,3 +57,4 @@ class User(Base):
 from app.models.refresh_token import RefreshToken  # noqa: E402
 from app.modules.documents.models import Document  # noqa: E402
 from app.models.user_identity import UserIdentity  # noqa: E402
+from app.models.user_platform_role import UserPlatformRole  # noqa: E402

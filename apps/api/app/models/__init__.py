@@ -7,6 +7,7 @@ from app.models.role import Role
 from app.models.role_permission import RolePermission
 from app.models.user import User
 from app.models.user_identity import UserIdentity
+from app.models.user_platform_role import UserPlatformRole
 
 __all__ = [
     "User",
@@ -18,4 +19,5 @@ __all__ = [
     "Role",
     "Permission",
     "RolePermission",
+    "UserPlatformRole",
 ]
