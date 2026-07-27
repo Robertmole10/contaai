@@ -1,3 +1,9 @@
+from authlib.integrations.base_client.errors import OAuthError
+from fastapi import Request
+from fastapi.responses import RedirectResponse
+
+from app.core.oauth import oauth
+from app.services.oauth import get_or_create_google_user
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
@@ -38,6 +44,71 @@ def auth_response(user: User) -> AuthResponse:
         access_expires_in=settings.access_token_expire_minutes * 60,
     )
 
+@router.get("/google/login")
+async def google_login(request: Request):
+    return await oauth.google.authorize_redirect(
+        request,
+        settings.google_redirect_uri,
+    )
+
+
+@router.get("/google/callback")
+async def google_callback(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    try:
+        token = await oauth.google.authorize_access_token(request)
+
+        user_info = token.get("userinfo")
+        if not user_info:
+            raise AuthError(
+                "Google nu a furnizat informațiile utilizatorului."
+            )
+
+        user = get_or_create_google_user(
+            db,
+            dict(user_info),
+        )
+
+        access_token, refresh_token = issue_tokens(db, user)
+
+    except OAuthError as exc:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Autentificarea Google a eșuat. Reîncearcă autentificarea.",
+        ) from exc
+
+    except AuthError as exc:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        ) from exc
+
+    except Exception as exc:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="A apărut o eroare internă la autentificare.",
+        ) from exc
+
+    response = RedirectResponse(
+        url=settings.frontend_url,
+        status_code=status.HTTP_302_FOUND,
+    )
+
+    set_auth_cookies(
+        response,
+        access_token,
+        refresh_token,
+    )
+
+    return response
 
 @router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, response: Response, db: Session = Depends(get_db)):
