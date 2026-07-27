@@ -4,7 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from app.api.dependencies import get_current_user
+from app.api.dependencies import (
+    get_current_user,
+    require_permission,
+)
 from app.db.session import get_db
 from app.models.company import Company
 from app.models.membership import Membership
@@ -26,12 +29,6 @@ def membership_for(db: Session, user_id: uuid.UUID, organization_id: uuid.UUID) 
     if not membership:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organizația nu a fost găsită.")
     return membership
-
-
-def require_manage_company(membership: Membership) -> None:
-    if membership.role.key not in {"owner", "admin"}:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Nu ai dreptul să administrezi companii.")
-
 
 def serialize_organization(membership: Membership) -> OrganizationResponse:
     org = membership.organization
@@ -107,7 +104,32 @@ def create_company(organization_id: uuid.UUID, payload: CompanyCreate, current_u
     db.add(company)
     db.commit()
     db.refresh(company)
-    return company
+    return compan@router.post(
+    "/organizations/{organization_id}/companies",
+    response_model=CompanyResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_company(
+    organization_id: uuid.UUID,
+    payload: CompanyCreate,
+    membership: Membership = Depends(
+        require_permission("company.manage")
+    ),
+    db: Session = Depends(get_db),
+):
+    company = Company(
+        organization_id=membership.organization_id,
+        name=payload.name.strip(),
+        tax_id=payload.tax_id,
+        legal_form=payload.legal_form,
+        country_code=payload.country_code.upper(),
+    )
+
+    db.add(company)
+    db.commit()
+    db.refresh(company)
+
+    return companyy
 
 
 @router.get("/organizations/{organization_id}/companies", response_model=list[CompanyResponse])
