@@ -15,6 +15,7 @@ from app.models.organization import Organization
 from app.models.role import Role
 from app.models.user import User
 from app.schemas.workspace import CompanyCreate, CompanyResponse, OrganizationCreate, OrganizationResponse, RoleResponse, WorkspaceResponse
+from app.modules.invoicing.utils import normalize_name_key
 
 router = APIRouter(tags=["Workspace"])
 
@@ -106,6 +107,7 @@ def create_company(
     company = Company(
         organization_id=membership.organization_id,
         name=payload.name.strip(),
+        name_key=normalize_name_key(payload.name),
         tax_id=payload.tax_id,
         legal_form=payload.legal_form,
         country_code=payload.country_code.upper(),
