@@ -90,21 +90,7 @@ def list_organizations(current_user: User = Depends(get_current_user), db: Sessi
     return [serialize_organization(m) for m in memberships]
 
 
-@router.post("/organizations/{organization_id}/companies", response_model=CompanyResponse, status_code=status.HTTP_201_CREATED)
-def create_company(organization_id: uuid.UUID, payload: CompanyCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    membership = membership_for(db, current_user.id, organization_id)
-    require_manage_company(membership)
-    company = Company(
-        organization_id=organization_id,
-        name=payload.name.strip(),
-        tax_id=payload.tax_id,
-        legal_form=payload.legal_form,
-        country_code=payload.country_code.upper(),
-    )
-    db.add(company)
-    db.commit()
-    db.refresh(company)
-    return compan@router.post(
+@router.post(
     "/organizations/{organization_id}/companies",
     response_model=CompanyResponse,
     status_code=status.HTTP_201_CREATED,
@@ -129,7 +115,7 @@ def create_company(
     db.commit()
     db.refresh(company)
 
-    return companyy
+    return company
 
 
 @router.get("/organizations/{organization_id}/companies", response_model=list[CompanyResponse])
