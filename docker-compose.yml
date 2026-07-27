@@ -109,7 +109,7 @@ services:
     networks:
       - frontend_net
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3001:3000"
     logging: *default-logging
     restart: unless-stopped
 

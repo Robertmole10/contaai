@@ -7,3 +7,5 @@ node_modules/
 .DS_Store
 cookies.txt
 docker-compose.yml.backup-*
+apps/web/node_modules/
+apps/web/.next/

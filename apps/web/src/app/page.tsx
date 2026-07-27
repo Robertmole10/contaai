@@ -1,2 +1,5 @@
-import Link from 'next/link';
-export default function Home(){return <main><section><div className="badge">ContaAI · Sprint 1</div><h1>ERP contabil asistat de AI</h1><p>Identitate și autentificare securizată, cu control uman asupra fiecărei operațiuni contabile.</p><div className="actions"><Link className="button-link" href="/login">Autentificare</Link><Link className="button-link secondary-link" href="/register">Creează cont</Link></div><div className="cards"><article><b>API</b><span>FastAPI + Alembic</span></article><article><b>Securitate</b><span>Argon2 + JWT rotation</span></article><article><b>Sesiuni</b><span>Cookie-uri HttpOnly</span></article></div></section></main>}
+import { redirect } from 'next/navigation';
+
+export default function HomePage() {
+  redirect('/login');
+}
